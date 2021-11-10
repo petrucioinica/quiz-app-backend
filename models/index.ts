@@ -20,9 +20,11 @@ fs.readdirSync(__dirname)
 		);
 	})
 	.forEach((file: string) => {
-		const model = require(path.join(__dirname, file))(sequelize);
-		if (!file.includes("associations")) {
-			db[model.name] = model as Model;
+		if (file !== "types.ts") {
+			const model = require(path.join(__dirname, file))(sequelize);
+			if (!file.includes("associations")) {
+				db[model.name] = model as Model;
+			}
 		}
 	});
 

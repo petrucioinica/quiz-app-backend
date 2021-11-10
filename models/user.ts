@@ -5,14 +5,45 @@ module.exports = (sequelize: Sequelize) => {
 
 	User.init(
 		{
-			// Model attributes are defined here
-			firstName: {
+			id: {
+				type: DataTypes.UUID,
+				allowNull: false, //@ts-ignore
+				defaultValue: Sequelize.UUIDV4,
+				primaryKey: true,
+			},
+			username: {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
-			lastName: {
+			password: {
 				type: DataTypes.STRING,
-				// allowNull defaults to true
+				allowNull: false,
+			},
+			email: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+			profilePicture: {
+				type: DataTypes.STRING,
+			},
+			elo: {
+				type: DataTypes.INTEGER,
+				defaultValue: 1000,
+				allowNull: false,
+			},
+			noOfRankedGames: {
+				type: DataTypes.INTEGER,
+				defaultValue: 0,
+				allowNull: false,
+			},
+			noOfUnrankedGames: {
+				type: DataTypes.INTEGER,
+				defaultValue: 0,
+				allowNull: false,
+			},
+			ladderPosition: {
+				type: DataTypes.INTEGER,
+				defaultValue: null,
 			},
 		},
 		{ sequelize }
