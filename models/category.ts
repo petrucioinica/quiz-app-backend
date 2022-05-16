@@ -1,9 +1,16 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 module.exports = (sequelize: Sequelize) => {
-	class Division extends Model {}
+	class Category extends Model {
+		//@ts-ignore
+		static associate(models) {
+			Category.hasMany(models.Question, {
+				foreignKey: "categoryId",
+			});
+		}
+	}
 
-	Division.init(
+	Category.init(
 		{
 			id: {
 				type: DataTypes.UUID,
@@ -18,5 +25,5 @@ module.exports = (sequelize: Sequelize) => {
 		},
 		{ sequelize }
 	);
-	return Division;
+	return Category;
 };

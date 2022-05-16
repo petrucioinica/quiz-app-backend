@@ -1,7 +1,14 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 module.exports = (sequelize: Sequelize) => {
-	class Division extends Model {}
+	class Division extends Model {
+		//@ts-ignore
+		static associate(models) {
+			Division.hasMany(models.User, {
+				foreignKey: "divisionId",
+			});
+		}
+	}
 
 	Division.init(
 		{

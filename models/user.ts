@@ -1,7 +1,22 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 module.exports = (sequelize: Sequelize) => {
-	class User extends Model {}
+	class User extends Model {
+		//@ts-ignore
+		static associate(models) {
+			User.hasMany(models.Match, {
+				foreignKey: "p1_id",
+			});
+
+			User.hasMany(models.Match, {
+				foreignKey: "p2_id",
+			});
+
+			User.hasMany(models.Match, {
+				foreignKey: "winner_id",
+			});
+		}
+	}
 
 	User.init(
 		{

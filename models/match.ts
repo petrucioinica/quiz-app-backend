@@ -1,7 +1,15 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 module.exports = (sequelize: Sequelize) => {
-	class Match extends Model {}
+	class Match extends Model {
+		//@ts-ignore
+		static associate(models) {
+			Match.belongsToMany(models.Question, {
+				foreignKey: "matchId",
+				through: models.MatchQuestion,
+			});
+		}
+	}
 
 	Match.init(
 		{

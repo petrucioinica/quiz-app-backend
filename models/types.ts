@@ -1,4 +1,4 @@
-import { Model, Sequelize } from "sequelize/types";
+import { Model, ModelStatic, Sequelize } from "sequelize/types";
 
 export interface DB {
 	sequelize: Sequelize;

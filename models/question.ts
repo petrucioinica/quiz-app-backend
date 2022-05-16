@@ -1,7 +1,15 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
 
 module.exports = (sequelize: Sequelize) => {
-	class Question extends Model {}
+	class Question extends Model {
+		//@ts-ignore
+		static associate(models) {
+			Question.belongsToMany(models.Match, {
+				foreignKey: "questionId",
+				through: models.MatchQuestion,
+			});
+		}
+	}
 
 	Question.init(
 		{
@@ -41,7 +49,7 @@ module.exports = (sequelize: Sequelize) => {
 				allowNull: true,
 			},
 			correctAnswer: {
-				type: DataTypes.NUMBER,
+				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
 		},

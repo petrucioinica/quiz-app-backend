@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //sequelize
 const db = require("./models/index");
-db.sequelize.sync();
+db.sequelize.sync({ force: true });
 
 app.get("/", async (req: Request, res: Response): Promise<Response> => {
 	return res.status(200).send({
