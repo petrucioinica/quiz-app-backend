@@ -5,15 +5,15 @@ module.exports = (sequelize: Sequelize) => {
 		//@ts-ignore
 		static associate(models) {
 			User.hasMany(models.Match, {
-				foreignKey: "p1_id",
+				foreignKey: "playerOneId",
 			});
 
 			User.hasMany(models.Match, {
-				foreignKey: "p2_id",
+				foreignKey: "playerTwoId",
 			});
 
 			User.hasMany(models.Match, {
-				foreignKey: "winner_id",
+				foreignKey: "winnerId",
 			});
 		}
 	}
@@ -59,6 +59,10 @@ module.exports = (sequelize: Sequelize) => {
 			ladderPosition: {
 				type: DataTypes.INTEGER,
 				defaultValue: null,
+			},
+			emailConfirmed: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{ sequelize }

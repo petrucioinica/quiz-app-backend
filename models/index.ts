@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
-const config = require("../configs/db.config.js");
+const config = require("../config/config.js");
 const db: Partial<DB> = {};
 
 let sequelize = new Sequelize(config);

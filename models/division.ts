@@ -13,9 +13,8 @@ module.exports = (sequelize: Sequelize) => {
 	Division.init(
 		{
 			id: {
-				type: DataTypes.UUID,
-				allowNull: false, //@ts-ignore
-				defaultValue: Sequelize.UUIDV4,
+				type: DataTypes.INTEGER,
+				allowNull: false,
 				primaryKey: true,
 			},
 			name: {
