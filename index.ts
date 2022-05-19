@@ -9,8 +9,8 @@ const port = process.env.PORT;
 
 //sequelize
 const db = require("./models/index");
-db.sequelize.sync({ force: true });
-//db.sequelize.sync();
+//db.sequelize.sync({ force: true });
+db.sequelize.sync();
 
 // Middleware
 app.use(express.json());

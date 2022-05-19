@@ -4,12 +4,16 @@ module.exports = {
 	async up(queryInterface, Sequelize) {
 		await queryInterface.bulkInsert("roles", [
 			{
-				id: "admin",
-				enumVal: 0,
+				name: "admin",
+				id: 0,
+				createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+				updatedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
 			},
 			{
 				name: "player",
 				id: 1,
+				createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+				updatedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
 			},
 		]);
 	},
