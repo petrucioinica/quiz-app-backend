@@ -34,8 +34,8 @@ router.post(
 
 router.get("/confirm-email/:email/:token", async (req, res) => {
 	try {
-		await confirmEmail(req.params.email, req.params.token);
-		res.status(200).json({ success: true });
+		const token = await confirmEmail(req.params.email, req.params.token);
+		res.status(200).json(token);
 	} catch (err) {
 		console.error("Error while confirming email: ", err);
 		res.status(400).json({

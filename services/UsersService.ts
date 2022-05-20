@@ -98,7 +98,7 @@ module.exports.registerUser = async (body: RegisterUserInput) => {
 };
 
 module.exports.confirmEmail = async (email: string, token: string) => {
-	const userWithEmail = db.User.findOne({ where: { email: email } });
+	const userWithEmail = await db.User.findOne({ where: { email: email } });
 	if (!userWithEmail) {
 		console.log("Email does not exist");
 		throw "ERROR";
@@ -112,15 +112,30 @@ module.exports.confirmEmail = async (email: string, token: string) => {
 
 	await db.User.update({ emailConfirmed: true }, { where: { email: email } });
 
-	return jwt.sign(
-		{
-			id: userWithEmail.id,
-			username: userWithEmail.username,
-			email: userWithEmail.email,
-			elo: userWithEmail.elo,
-		},
-		KEY
+	console.log(
+		jwt.sign(
+			{
+				id: userWithEmail.id,
+				username: userWithEmail.username,
+				email: userWithEmail.email,
+				elo: userWithEmail.elo,
+				roleId: userWithEmail.roleId,
+			},
+			KEY
+		)
 	);
+	return {
+		token: jwt.sign(
+			{
+				id: userWithEmail.id,
+				username: userWithEmail.username,
+				email: userWithEmail.email,
+				elo: userWithEmail.elo,
+				roleId: userWithEmail.roleId,
+			},
+			KEY
+		),
+	};
 };
 
 module.exports.logIn = async (credentials: LoginInput) => {
@@ -151,6 +166,7 @@ module.exports.logIn = async (credentials: LoginInput) => {
 			username: userToLogIn.username,
 			email: userToLogIn.email,
 			elo: userToLogIn.elo,
+			roleId: userToLogIn.roleId,
 		},
 		KEY
 	);
