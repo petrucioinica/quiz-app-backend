@@ -112,18 +112,6 @@ module.exports.confirmEmail = async (email: string, token: string) => {
 
 	await db.User.update({ emailConfirmed: true }, { where: { email: email } });
 
-	console.log(
-		jwt.sign(
-			{
-				id: userWithEmail.id,
-				username: userWithEmail.username,
-				email: userWithEmail.email,
-				elo: userWithEmail.elo,
-				roleId: userWithEmail.roleId,
-			},
-			KEY
-		)
-	);
 	return {
 		token: jwt.sign(
 			{
