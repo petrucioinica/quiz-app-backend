@@ -24,7 +24,7 @@ module.exports = (sequelize: Sequelize) => {
 				allowNull: false,
 			},
 		},
-		{ sequelize }
+		{ sequelize, paranoid: true }
 	);
 	return Category;
 };

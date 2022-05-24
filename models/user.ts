@@ -76,7 +76,7 @@ module.exports = (sequelize: Sequelize) => {
 				defaultValue: false,
 			},
 		},
-		{ sequelize }
+		{ sequelize, paranoid: true }
 	);
 	return User;
 };
