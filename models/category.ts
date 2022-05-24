@@ -6,6 +6,7 @@ module.exports = (sequelize: Sequelize) => {
 		static associate(models) {
 			Category.hasMany(models.Question, {
 				foreignKey: "categoryId",
+				as: "category",
 			});
 		}
 	}

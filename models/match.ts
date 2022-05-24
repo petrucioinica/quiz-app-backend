@@ -7,6 +7,22 @@ module.exports = (sequelize: Sequelize) => {
 			Match.belongsToMany(models.Question, {
 				foreignKey: "matchId",
 				through: models.MatchQuestion,
+				as: "questions",
+			});
+
+			Match.belongsTo(models.User, {
+				foreignKey: "playerOneId",
+				as: "playerOne",
+			});
+
+			Match.belongsTo(models.User, {
+				foreignKey: "playerTwoId",
+				as: "playerTwo",
+			});
+
+			Match.belongsTo(models.User, {
+				foreignKey: "winnerId",
+				as: "winner",
 			});
 		}
 	}

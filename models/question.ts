@@ -7,6 +7,11 @@ module.exports = (sequelize: Sequelize) => {
 			Question.belongsToMany(models.Match, {
 				foreignKey: "questionId",
 				through: models.MatchQuestion,
+				as: "match",
+			});
+			Question.belongsTo(models.Category, {
+				as: "category",
+				foreignKey: "categoryId",
 			});
 		}
 	}

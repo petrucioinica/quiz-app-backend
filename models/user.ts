@@ -20,6 +20,10 @@ module.exports = (sequelize: Sequelize) => {
 				foreignKey: "roleId",
 				as: "role",
 			});
+			User.belongsTo(models.Division, {
+				foreignKey: "divisionId",
+				as: "division",
+			});
 		}
 	}
 
