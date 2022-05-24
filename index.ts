@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const UserController = require("./controllers/UserController");
 const CategoryController = require("./controllers/CategoryController");
+const QuestionController = require("./controllers/QuestionController");
 
 const app: Application = express();
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 //routers
 app.use("/api/user", UserController);
 app.use("/api/category", CategoryController);
+app.use("/api/question", QuestionController);
 
 app.get("/", async (req: Request, res: Response): Promise<Response> => {
 	return res.status(200).send({

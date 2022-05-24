@@ -7,11 +7,13 @@ module.exports = (fields: string[]) => {
 
 		for (const field of fields) {
 			if (body[field] === undefined || body[field] === "") {
-				res.status(400).json({
-					error: "Error! Field is required!",
-					message: `Error! ${field} is required!`,
-				});
-				break;
+				res
+					.status(400)
+					.json({
+						error: "Error! Field is required!",
+						message: `Error! ${field} is required!`,
+					})
+					.end();
 			}
 		}
 		next();
