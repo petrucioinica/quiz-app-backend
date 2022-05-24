@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 const dotenv = require("dotenv");
 const cors = require("cors");
 const UserController = require("./controllers/UserController");
+const CategoryController = require("./controllers/CategoryController");
 
 const app: Application = express();
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //routers
 app.use("/api/user", UserController);
+app.use("/api/category", CategoryController);
 
 app.get("/", async (req: Request, res: Response): Promise<Response> => {
 	return res.status(200).send({

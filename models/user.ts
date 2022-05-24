@@ -15,6 +15,11 @@ module.exports = (sequelize: Sequelize) => {
 			User.hasMany(models.Match, {
 				foreignKey: "winnerId",
 			});
+
+			User.belongsTo(models.Role, {
+				foreignKey: "roleId",
+				as: "role",
+			});
 		}
 	}
 
