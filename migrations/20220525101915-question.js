@@ -12,7 +12,7 @@ module.exports = {
 				primaryKey: true,
 			},
 			question: {
-				type: DataTypes.STRING,
+				type: DataTypes.STRING(800),
 				allowNull: false,
 			},
 			first: {
