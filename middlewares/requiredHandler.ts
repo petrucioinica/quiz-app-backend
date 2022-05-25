@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 module.exports = (fields: string[]) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const body = req.body;
-
+		let missing = false;
 		for (const field of fields) {
 			if (body[field] === undefined || body[field] === "") {
 				res
@@ -14,8 +14,12 @@ module.exports = (fields: string[]) => {
 						message: `Error! ${field} is required!`,
 					})
 					.end();
+				missing = true;
+				break;
 			}
 		}
-		next();
+		if (!missing) {
+			next();
+		}
 	};
 };

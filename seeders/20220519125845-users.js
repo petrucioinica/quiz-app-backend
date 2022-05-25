@@ -13,6 +13,7 @@ module.exports = {
 				id: crypto.randomBytes(5).toString("hex"),
 				createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
 				updatedAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+				divisionId: null,
 			},
 		]);
 	},

@@ -1,25 +1,10 @@
-import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
+"use strict";
 
-module.exports = (sequelize: Sequelize) => {
-	class Question extends Model {
-		//@ts-ignore
-		static associate(models) {
-			Question.belongsToMany(models.Match, {
-				foreignKey: "questionId",
-				through: models.MatchQuestion,
-				as: "match",
-			});
-			Question.belongsTo(models.Category, {
-				as: "category",
-				foreignKey: "categoryId",
-				onDelete: "CASCADE",
-				hooks: true,
-			});
-		}
-	}
+const { DataTypes } = require("sequelize");
 
-	Question.init(
-		{
+module.exports = {
+	async up(queryInterface, Sequelize) {
+		await queryInterface.createTable("questions", {
 			id: {
 				type: DataTypes.UUID,
 				allowNull: false, //@ts-ignore
@@ -59,8 +44,31 @@ module.exports = (sequelize: Sequelize) => {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
-		},
-		{ sequelize }
-	);
-	return Question;
+			categoryId: {
+				type: DataTypes.UUID,
+				allowNull: false,
+				onDelete: "CASCADE",
+				references: {
+					model: {
+						tableName: "categories",
+					},
+					key: "id",
+				},
+			},
+			createdAt: {
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+			},
+			updatedAt: {
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.literal(
+					"CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+				),
+			},
+		});
+	},
+
+	async down(queryInterface, Sequelize) {
+		await queryInterface.dropTable("questions");
+	},
 };

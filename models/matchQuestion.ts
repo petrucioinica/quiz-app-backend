@@ -22,7 +22,7 @@ module.exports = (sequelize: Sequelize) => {
 				defaultValue: 0,
 			},
 		},
-		{ sequelize, paranoid: true }
+		{ sequelize }
 	);
 	return MatchQuestion;
 };

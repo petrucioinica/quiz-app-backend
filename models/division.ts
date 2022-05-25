@@ -23,10 +23,10 @@ module.exports = (sequelize: Sequelize) => {
 			},
 			icon: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				allowNull: true,
 			},
 		},
-		{ sequelize, paranoid: true }
+		{ sequelize }
 	);
 	return Division;
 };

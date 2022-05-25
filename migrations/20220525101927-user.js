@@ -1,34 +1,9 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+"use strict";
+const { DataTypes } = require("sequelize");
 
-module.exports = (sequelize: Sequelize) => {
-	class User extends Model {
-		//@ts-ignore
-		static associate(models) {
-			User.hasMany(models.Match, {
-				foreignKey: "playerOneId",
-			});
-
-			User.hasMany(models.Match, {
-				foreignKey: "playerTwoId",
-			});
-
-			User.hasMany(models.Match, {
-				foreignKey: "winnerId",
-			});
-
-			User.belongsTo(models.Role, {
-				foreignKey: "roleId",
-				as: "role",
-			});
-			User.belongsTo(models.Division, {
-				foreignKey: "divisionId",
-				as: "division",
-			});
-		}
-	}
-
-	User.init(
-		{
+module.exports = {
+	async up(queryInterface, Sequelize) {
+		await queryInterface.createTable("users", {
 			id: {
 				type: DataTypes.UUID,
 				allowNull: false, //@ts-ignore
@@ -75,8 +50,42 @@ module.exports = (sequelize: Sequelize) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false,
 			},
-		},
-		{ sequelize }
-	);
-	return User;
+			roleId: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+				onDelete: "NO ACTION",
+				references: {
+					model: {
+						tableName: "roles",
+					},
+					key: "id",
+				},
+			},
+			divisionId: {
+				type: DataTypes.INTEGER,
+				allowNull: true,
+				onDelete: "NO ACTION",
+				references: {
+					model: {
+						tableName: "divisions",
+					},
+					key: "id",
+				},
+			},
+			createdAt: {
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+			},
+			updatedAt: {
+				type: Sequelize.DATE,
+				defaultValue: Sequelize.literal(
+					"CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+				),
+			},
+		});
+	},
+
+	async down(queryInterface, Sequelize) {
+		await queryInterface.dropTable("users");
+	},
 };

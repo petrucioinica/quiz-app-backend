@@ -38,7 +38,6 @@ const authorizationMiddleware = (role?: "admin" | "player") => {
 			}
 		} else {
 			res.status(401).end();
-			next();
 		}
 	};
 };
