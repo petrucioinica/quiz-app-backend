@@ -28,7 +28,7 @@ module.exports.sendConfirmationEmail = async (user: RegisterUserInput) => {
 			service: "gmail",
 			auth: {
 				user: "donotreplyquizit@gmail.com", // generated ethereal user
-				pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+				pass: process.env.EMAIL_APP_PASSWORD, // generated ethereal password
 			},
 		});
 
