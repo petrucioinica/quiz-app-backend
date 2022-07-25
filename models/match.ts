@@ -46,7 +46,7 @@ module.exports = (sequelize: Sequelize) => {
 			},
 			endedAt: {
 				type: DataTypes.DATE,
-				allowNull: false,
+				allowNull: true,
 			},
 			playerOneScore: {
 				type: DataTypes.INTEGER,

@@ -27,7 +27,7 @@ const authorizationMiddleware = (role?: "admin" | "player") => {
 
 				if (user) {
 					//@ts-ignore
-					req.user = user;
+					req.user = user.dataValues;
 					next();
 				} else {
 					res.status(401).end();
