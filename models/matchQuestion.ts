@@ -21,6 +21,10 @@ module.exports = (sequelize: Sequelize) => {
 				allowNull: false,
 				defaultValue: 0,
 			},
+			orderNumber: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
 		},
 		{ sequelize }
 	);

@@ -1,27 +1,25 @@
-import e, { Router } from "express";
-import PlayerQueue from "../queue/Queue";
+import { Router } from "express";
+import { ErrorInterface } from "../services/types";
 const express = require("express");
 const router: Router = express.Router();
 const authorisationMiddleware = require("../middlewares/authroisation");
-
-const playerQueue = new PlayerQueue();
+const { matchmakeUser } = require("../services/MatchmakingService");
 
 router.use(authorisationMiddleware());
 
-router.get("/enqueue", (req, res) => {
-	//@ts-ignore
-	const user = req.user;
-
-	playerQueue.push(user);
-	res.send({ success: true });
-});
-
 router.get("/matchmake", (req, res) => {
-	//@ts-ignore
-	const user = req.user;
-	const toMatchmake = playerQueue.matchmake(user);
-
-	res.send(toMatchmake);
+	try {
+		//@ts-ignore
+		const user = req.user;
+		const toMatchmake = matchmakeUser(user);
+		res.send(toMatchmake);
+	} catch (err) {
+		console.error(err);
+		res.status((err as ErrorInterface).status ?? 500).json({
+			error: (err as ErrorInterface).error ?? "Error!",
+			message: (err as ErrorInterface).message ?? "Something went wrong!",
+		});
+	}
 });
 
 module.exports = router;
