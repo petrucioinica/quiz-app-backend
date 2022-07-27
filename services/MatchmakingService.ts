@@ -1,6 +1,6 @@
 import PlayerQueue from "../queue/Queue";
 import { UserToQueueInterface } from "../queue/types";
-
+const { Sequelize } = require("sequelize");
 const db = require("../models");
 
 const playerQueue = new PlayerQueue();
@@ -29,8 +29,29 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 			startedAt: new Date().toISOString(),
 		});
 		const matchId = newMatch.id;
-		return { p1: toMatchmake.p1, p2: toMatchmake.p2, matchId };
+
+		const pickedQuestions = await db.Question.findAll({
+			order: Sequelize.literal("rand()"),
+			limit: 10,
+			include: { model: db.Category, as: "category" },
+		});
+
+		await db.MatchQuestion.bulkCreate(
+			pickedQuestions.map((q: any, index: number) => ({
+				questionId: q.id,
+				matchId,
+				orderNumber: index + 1,
+			}))
+		);
+
+		return {
+			p1: toMatchmake.p1,
+			p2: toMatchmake.p2,
+			matchId,
+			questions: pickedQuestions,
+		};
 	}
+
 	//create match and pick random questions for it
 	//send the match with the questions
 	//then we move to match controller where we handle the match
