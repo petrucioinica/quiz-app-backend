@@ -3,15 +3,33 @@ import { ErrorInterface } from "../services/types";
 const express = require("express");
 const router: Router = express.Router();
 const authorisationMiddleware = require("../middlewares/authroisation");
-const { matchmakeUser } = require("../services/MatchmakingService");
+const {
+	matchmakeUser,
+	matchmakeUnranked,
+} = require("../services/MatchmakingService");
 
 router.use(authorisationMiddleware());
 
-router.get("/matchmake", (req, res) => {
+router.get("/matchmake", async (req, res) => {
 	try {
 		//@ts-ignore
 		const user = req.user;
-		const toMatchmake = matchmakeUser(user);
+		const toMatchmake = await matchmakeUser(user);
+		res.send(toMatchmake);
+	} catch (err) {
+		console.error(err);
+		res.status((err as ErrorInterface).status ?? 500).json({
+			error: (err as ErrorInterface).error ?? "Error!",
+			message: (err as ErrorInterface).message ?? "Something went wrong!",
+		});
+	}
+});
+
+router.get("/matchmake-unranked", async (req, res) => {
+	try {
+		//@ts-ignore
+		const user = req.user;
+		const toMatchmake = await matchmakeUnranked(user);
 		res.send(toMatchmake);
 	} catch (err) {
 		console.error(err);

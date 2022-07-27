@@ -58,6 +58,7 @@ class PlayerQueue {
 				status: "searching",
 			};
 		} else {
+			const plr = this.queue[playerQueuePosition];
 			let searchLow = 1;
 			let searchHigh = 1;
 			while (
@@ -73,7 +74,7 @@ class PlayerQueue {
 						this.queue = this.queue.filter(
 							(p) => p.id !== player.id && p.id !== v1.id
 						);
-						return { p1: player, p2: v1 };
+						return { p1: plr, p2: v1 };
 					}
 				}
 
@@ -86,7 +87,7 @@ class PlayerQueue {
 						this.queue = this.queue.filter(
 							(p) => p.id !== player.id && p.id !== v2.id
 						);
-						return { p1: player, p2: v2 };
+						return { p1: plr, p2: v2 };
 					}
 				}
 
