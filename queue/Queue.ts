@@ -35,10 +35,6 @@ class PlayerQueue {
 				(p1, p2) => p1.elo - p2.elo
 			);
 			this.bufferQueue = [];
-			console.log("\n\n\n\n");
-			console.log(this.queue);
-			console.log("*************");
-			console.log(this.bufferQueue);
 		}, 5000);
 	}
 

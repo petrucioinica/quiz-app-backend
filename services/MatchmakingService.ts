@@ -64,7 +64,7 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 		const newMatch = await db.Match.create({
 			isRanked: false,
 			playerOneId: toMatchmake.p1.id,
-			playerTwoid: toMatchmake.p2.id,
+			playerTwoId: toMatchmake.p2.id,
 			playerOneElo: toMatchmake.p1.elo,
 			playerTwoElo: toMatchmake.p2.elo,
 			startedAt: new Date().toISOString(),
@@ -91,13 +91,14 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 			matchId,
 			questions: pickedQuestions,
 		};
+	} else {
+		return toMatchmake;
 	}
 
 	//create match and pick random questions for it
 	//send the match with the questions
 	//then we move to match controller where we handle the match
 	//users do not wait for each other, but at the end of the match the earliest ueer will long poll until the match is done
-	return toMatchmake;
 };
 
 module.exports.confirmMatch = async (
