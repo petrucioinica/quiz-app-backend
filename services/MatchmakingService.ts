@@ -1,3 +1,4 @@
+import e from "express";
 import PlayerQueue from "../queue/Queue";
 import { UserToQueueInterface } from "../queue/types";
 import { FinishMatchInputsInterface } from "./MatchmakingService.type";
@@ -106,6 +107,7 @@ module.exports.getMatchInfo = async (matchId: string) => {
 	const matchInfo = await db.Match.findOne({
 		where: {
 			id: matchId,
+			endedAt: null,
 		},
 		include: [
 			{ model: db.User, as: "playerOne" },
@@ -150,15 +152,26 @@ module.exports.fininshUnrankedMatch = async (
 		};
 	}
 
-	if (matchToEnd.playerOneId === user.id && matchToEnd.playerOneScore === -1) {
-		matchToEnd.playerOneScore = body.points;
-	}
+	const matchQuestions = await db.MatchQuestion.findAll({
+		where: {
+			matchId: body.matchId,
+		},
+		include: {
+			model: db.Question,
+			include: { model: db.Category, as: "category" },
+		},
+	});
 
-	if (matchToEnd.playerTwoId === user.id && matchToEnd.playerTwoScore === -1) {
-		matchToEnd.playerTwoScore = body.points;
-	}
-
-	if (matchToEnd.playerOneScore !== -1 && matchToEnd.playerTwoScore !== -1) {
+	const availableTime =
+		matchQuestions.reduce(
+			//@ts-ignore
+			(acc, q) => q.Question.availableTime + acc,
+			0
+		) * 1000;
+	//@ts-ignore
+	const timeDifference = new Date() - new Date(matchToEnd.startedAt);
+	console.log(timeDifference, availableTime);
+	if (timeDifference - 10000 > availableTime) {
 		matchToEnd.endedAt = new Date()
 			.toISOString()
 			.slice(0, 19)
@@ -170,15 +183,42 @@ module.exports.fininshUnrankedMatch = async (
 					? matchToEnd.playerOneId
 					: matchToEnd.playerTwoId;
 		}
+
+		await matchToEnd.save();
+	} else {
+		if (
+			matchToEnd.playerOneId === user.id &&
+			matchToEnd.playerOneScore === -1
+		) {
+			matchToEnd.playerOneScore = body.points;
+		}
+
+		if (
+			matchToEnd.playerTwoId === user.id &&
+			matchToEnd.playerTwoScore === -1
+		) {
+			matchToEnd.playerTwoScore = body.points;
+		}
+
+		if (matchToEnd.playerOneScore !== -1 && matchToEnd.playerTwoScore !== -1) {
+			matchToEnd.endedAt = new Date()
+				.toISOString()
+				.slice(0, 19)
+				.replace("T", " ");
+
+			if (matchToEnd.playerOneScore !== matchToEnd.playerTwoScore) {
+				matchToEnd.winnerId =
+					matchToEnd.playerOneScore > matchToEnd.playerTwoScore
+						? matchToEnd.playerOneId
+						: matchToEnd.playerTwoId;
+			}
+		}
+
+		await matchToEnd.save();
+
+		if (matchToEnd.isRanked) {
+			console.log("Handle elo update");
+		}
 	}
-
-	await matchToEnd.save();
-
-	if (matchToEnd.isRanked) {
-		console.log("Handle elo update");
-	}
-
-	return matchToEnd;
-
 	return matchToEnd;
 };
