@@ -48,7 +48,24 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 				model: db.Question,
 				include: { model: db.Category, as: "category" },
 			},
-		}); //@ts-ignore
+		});
+
+		const availableTime =
+			matchQuestions.reduce(
+				//@ts-ignore
+				(acc, q) => q.Question.availableTime + acc,
+				0
+			) * 1000;
+		//@ts-ignore
+		const timeDifference = new Date() - new Date(currentMatch.startedAt);
+
+		if (timeDifference - 10000 > availableTime) {
+			console.log("asfafsaf");
+			currentMatch.endedAt = new Date().toISOString();
+			await currentMatch.save();
+			return { status: "searching", timeDifference: "a lot" };
+		}
+		//@ts-ignore
 		returnMatch.questions = matchQuestions.map((q) => q.Question);
 		//@ts-ignore
 		returnMatch.matchId = currentMatch.id;
@@ -60,6 +77,7 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 	}
 
 	const toMatchmake = unrankedQueue.matchmake(user);
+	unrankedQueue.log();
 
 	if (toMatchmake.p1) {
 		//to create match first and pass its id
@@ -125,6 +143,33 @@ module.exports.getMatchInfo = async (matchId: string) => {
 		},
 	});
 
+	const availableTime =
+		matchQuestions.reduce(
+			//@ts-ignore
+			(acc, q) => q.Question.availableTime + acc,
+			0
+		) * 1000;
+	//@ts-ignore
+	const timeDifference = new Date() - new Date(matchInfo.startedAt);
+
+	if (timeDifference - 10000 > availableTime) {
+		matchInfo.endedAt = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+		if (matchInfo.playerOneScore !== matchInfo.playerTwoScore) {
+			matchInfo.winnerId =
+				matchInfo.playerOneScore > matchInfo.playerTwoScore
+					? matchInfo.playerOneId
+					: matchInfo.playerTwoId;
+		}
+
+		await matchInfo.save();
+		throw {
+			status: 400,
+			error: "Match expired",
+			message: "The match you are trying to play has expired.",
+		};
+	}
+
 	return {
 		p1: matchInfo.playerOne,
 		p2: matchInfo.playerTwo,
@@ -133,7 +178,7 @@ module.exports.getMatchInfo = async (matchId: string) => {
 	};
 };
 
-module.exports.fininshUnrankedMatch = async (
+module.exports.finishMatch = async (
 	user: UserToQueueInterface,
 	body: FinishMatchInputsInterface
 ) => {
@@ -170,7 +215,7 @@ module.exports.fininshUnrankedMatch = async (
 		) * 1000;
 	//@ts-ignore
 	const timeDifference = new Date() - new Date(matchToEnd.startedAt);
-	console.log(timeDifference, availableTime);
+
 	if (timeDifference - 10000 > availableTime) {
 		matchToEnd.endedAt = new Date()
 			.toISOString()

@@ -106,7 +106,7 @@ class PlayerQueue {
 	}
 
 	public log() {
-		console.log(this.queue);
+		console.log(this.queue, "&&&&&&&&&&&&", this.bufferQueue);
 	}
 }
 

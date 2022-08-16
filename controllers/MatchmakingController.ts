@@ -7,7 +7,7 @@ const {
 	matchmakeUser,
 	matchmakeUnranked,
 	getMatchInfo,
-	fininshUnrankedMatch,
+	finishMatch,
 } = require("../services/MatchmakingService");
 const requiredHandler = require("../middlewares/requiredHandler");
 
@@ -64,7 +64,7 @@ router.post(
 		try {
 			//@ts-ignore
 			const user = req.user;
-			const matchInfo = await fininshUnrankedMatch(user, req.body);
+			const matchInfo = await finishMatch(user, req.body);
 			res.send(matchInfo);
 		} catch (err) {
 			console.error(err);
