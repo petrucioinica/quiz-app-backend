@@ -51,12 +51,12 @@ module.exports = (sequelize: Sequelize) => {
 			playerOneScore: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
-				defaultValue: 0,
+				defaultValue: -1,
 			},
 			playerTwoScore: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
-				defaultValue: 0,
+				defaultValue: -1,
 			},
 			playerOneElo: {
 				type: DataTypes.INTEGER,

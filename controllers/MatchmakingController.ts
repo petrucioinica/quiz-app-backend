@@ -7,7 +7,9 @@ const {
 	matchmakeUser,
 	matchmakeUnranked,
 	getMatchInfo,
+	fininshUnrankedMatch,
 } = require("../services/MatchmakingService");
+const requiredHandler = require("../middlewares/requiredHandler");
 
 router.use(authorisationMiddleware());
 
@@ -54,5 +56,24 @@ router.get("/get-match-info/:matchId", async (req, res) => {
 		});
 	}
 });
+
+router.post(
+	"/finish-match",
+	requiredHandler(["matchId", "points"]),
+	async (req, res) => {
+		try {
+			//@ts-ignore
+			const user = req.user;
+			const matchInfo = await fininshUnrankedMatch(user, req.body);
+			res.send(matchInfo);
+		} catch (err) {
+			console.error(err);
+			res.status((err as ErrorInterface).status ?? 500).json({
+				error: (err as ErrorInterface).error ?? "Error!",
+				message: (err as ErrorInterface).message ?? "Something went wrong!",
+			});
+		}
+	}
+);
 
 module.exports = router;

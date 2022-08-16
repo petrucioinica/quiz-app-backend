@@ -1,5 +1,6 @@
 import PlayerQueue from "../queue/Queue";
 import { UserToQueueInterface } from "../queue/types";
+import { FinishMatchInputsInterface } from "./MatchmakingService.type";
 const { Sequelize, Op } = require("sequelize");
 const db = require("../models");
 
@@ -128,4 +129,56 @@ module.exports.getMatchInfo = async (matchId: string) => {
 		matchId, //@ts-ignore
 		questions: matchQuestions.map((q) => q.Question),
 	};
+};
+
+module.exports.fininshUnrankedMatch = async (
+	user: UserToQueueInterface,
+	body: FinishMatchInputsInterface
+) => {
+	const matchToEnd = await db.Match.findByPk(body.matchId, {
+		include: [
+			{ model: db.User, as: "playerOne" },
+			{ model: db.User, as: "playerTwo" },
+		],
+	});
+
+	if (!matchToEnd) {
+		throw {
+			status: 400,
+			error: "Match not found",
+			message: "The match you are trying to end does not exist.",
+		};
+	}
+
+	if (matchToEnd.playerOneId === user.id && matchToEnd.playerOneScore === -1) {
+		matchToEnd.playerOneScore = body.points;
+	}
+
+	if (matchToEnd.playerTwoId === user.id && matchToEnd.playerTwoScore === -1) {
+		matchToEnd.playerTwoScore = body.points;
+	}
+
+	if (matchToEnd.playerOneScore !== -1 && matchToEnd.playerTwoScore !== -1) {
+		matchToEnd.endedAt = new Date()
+			.toISOString()
+			.slice(0, 19)
+			.replace("T", " ");
+
+		if (matchToEnd.playerOneScore !== matchToEnd.playerTwoScore) {
+			matchToEnd.winnerId =
+				matchToEnd.playerOneScore > matchToEnd.playerTwoScore
+					? matchToEnd.playerOneId
+					: matchToEnd.playerTwoId;
+		}
+	}
+
+	await matchToEnd.save();
+
+	if (matchToEnd.isRanked) {
+		console.log("Handle elo update");
+	}
+
+	return matchToEnd;
+
+	return matchToEnd;
 };
