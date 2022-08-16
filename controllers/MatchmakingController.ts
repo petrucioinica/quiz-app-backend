@@ -6,6 +6,7 @@ const authorisationMiddleware = require("../middlewares/authroisation");
 const {
 	matchmakeUser,
 	matchmakeUnranked,
+	getMatchInfo,
 } = require("../services/MatchmakingService");
 
 router.use(authorisationMiddleware());
@@ -31,6 +32,20 @@ router.get("/matchmake-unranked", async (req, res) => {
 		const user = req.user;
 		const toMatchmake = await matchmakeUnranked(user);
 		res.send(toMatchmake);
+	} catch (err) {
+		console.error(err);
+		res.status((err as ErrorInterface).status ?? 500).json({
+			error: (err as ErrorInterface).error ?? "Error!",
+			message: (err as ErrorInterface).message ?? "Something went wrong!",
+		});
+	}
+});
+
+router.get("/get-match-info/:matchId", async (req, res) => {
+	try {
+		//@ts-ignore
+		const matchInfo = await getMatchInfo(req.params.matchId);
+		res.send(matchInfo);
 	} catch (err) {
 		console.error(err);
 		res.status((err as ErrorInterface).status ?? 500).json({

@@ -101,7 +101,31 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 	//users do not wait for each other, but at the end of the match the earliest ueer will long poll until the match is done
 };
 
-module.exports.confirmMatch = async (
-	user: UserToQueueInterface,
-	matchId: string
-) => {};
+module.exports.getMatchInfo = async (matchId: string) => {
+	const matchInfo = await db.Match.findOne({
+		where: {
+			id: matchId,
+		},
+		include: [
+			{ model: db.User, as: "playerOne" },
+			{ model: db.User, as: "playerTwo" },
+		],
+	});
+
+	const matchQuestions = await db.MatchQuestion.findAll({
+		where: {
+			matchId: matchId,
+		},
+		include: {
+			model: db.Question,
+			include: { model: db.Category, as: "category" },
+		},
+	});
+
+	return {
+		p1: matchInfo.playerOne,
+		p2: matchInfo.playerTwo,
+		matchId, //@ts-ignore
+		questions: matchQuestions.map((q) => q.Question),
+	};
+};
