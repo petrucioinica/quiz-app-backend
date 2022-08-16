@@ -1,7 +1,14 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 module.exports = (sequelize: Sequelize) => {
-	class MatchQuestion extends Model {}
+	class MatchQuestion extends Model {
+		//@ts-ignore
+		static associate(models) {
+			MatchQuestion.belongsTo(models.Question, {
+				foreignKey: "questionId",
+			});
+		}
+	}
 
 	MatchQuestion.init(
 		{

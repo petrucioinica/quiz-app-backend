@@ -1,6 +1,6 @@
 import PlayerQueue from "../queue/Queue";
 import { UserToQueueInterface } from "../queue/types";
-const { Sequelize } = require("sequelize");
+const { Sequelize, Op } = require("sequelize");
 const db = require("../models");
 
 const playerQueue = new PlayerQueue();
@@ -17,7 +17,48 @@ module.exports.matchmakeUser = async (user: UserToQueueInterface) => {
 };
 
 module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
+	const currentMatch = await db.Match.findOne({
+		where: {
+			[Op.or]: [
+				{
+					playerOneId: user.id,
+				},
+				{
+					playerTwoId: user.id,
+				},
+			],
+			endedAt: null,
+		},
+		include: [
+			{ model: db.User, as: "playerOne" },
+			{ model: db.User, as: "playerTwo" },
+		],
+	});
+
+	if (currentMatch) {
+		const returnMatch = {};
+
+		const matchQuestions = await db.MatchQuestion.findAll({
+			where: {
+				matchId: currentMatch.id,
+			},
+			include: {
+				model: db.Question,
+				include: { model: db.Category, as: "category" },
+			},
+		}); //@ts-ignore
+		returnMatch.questions = matchQuestions.map((q) => q.Question);
+		//@ts-ignore
+		returnMatch.matchId = currentMatch.id;
+		//@ts-ignore
+		returnMatch.p1 = currentMatch.playerOne;
+		//@ts-ignore
+		returnMatch.p2 = currentMatch.playerTwo;
+		return returnMatch;
+	}
+
 	const toMatchmake = unrankedQueue.matchmake(user);
+
 	if (toMatchmake.p1) {
 		//to create match first and pass its id
 		const newMatch = await db.Match.create({
