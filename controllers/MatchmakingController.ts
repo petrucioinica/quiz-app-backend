@@ -5,7 +5,7 @@ const router: Router = express.Router();
 const authorisationMiddleware = require("../middlewares/authroisation");
 const {
 	matchmakeUser,
-	matchmakeUnranked,
+	matchmake,
 	getMatchInfo,
 	finishMatch,
 } = require("../services/MatchmakingService");
@@ -13,11 +13,11 @@ const requiredHandler = require("../middlewares/requiredHandler");
 
 router.use(authorisationMiddleware());
 
-router.get("/matchmake", async (req, res) => {
+router.get("/matchmake-ranked", async (req, res) => {
 	try {
 		//@ts-ignore
 		const user = req.user;
-		const toMatchmake = await matchmakeUser(user);
+		const toMatchmake = await matchmake(user, true);
 		res.send(toMatchmake);
 	} catch (err) {
 		console.error(err);
@@ -32,7 +32,7 @@ router.get("/matchmake-unranked", async (req, res) => {
 	try {
 		//@ts-ignore
 		const user = req.user;
-		const toMatchmake = await matchmakeUnranked(user);
+		const toMatchmake = await matchmake(user);
 		res.send(toMatchmake);
 	} catch (err) {
 		console.error(err);
