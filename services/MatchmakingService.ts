@@ -4,6 +4,7 @@ import { UserToQueueInterface } from "../queue/types";
 import { FinishMatchInputsInterface } from "./MatchmakingService.type";
 const { Sequelize, Op } = require("sequelize");
 const db = require("../models");
+const EloRating = require("elo-rating");
 
 const rankedQueue = new PlayerQueue();
 const unrankedQueue = new PlayerQueue();
@@ -146,7 +147,7 @@ module.exports.getMatchInfo = async (matchId: string) => {
 			0
 		) * 1000;
 	//@ts-ignore
-	const timeDifference = new Date() - new Date(matchInfo.startedAt);
+	const timeDifference = new Date() - new Date(matchInfo?.startedAt);
 
 	if (timeDifference - 10000 > availableTime) {
 		matchInfo.endedAt = new Date().toISOString().slice(0, 19).replace("T", " ");
@@ -257,8 +258,21 @@ module.exports.finishMatch = async (
 
 		await matchToEnd.save();
 
-		if (matchToEnd.isRanked) {
-			console.log("Handle elo update");
+		if (matchToEnd.isRanked && matchToEnd.winnerId) {
+			const newElos = EloRating.calculate(
+				matchToEnd.playerOneElo,
+				matchToEnd.playerTwoElo,
+				matchToEnd.winnerId === matchToEnd.playerOneId
+			);
+
+			const newPlayerOneElo = newElos.playerRating;
+			const newPlayerTwoElo = newElos.opponentRating;
+			const playerOne = await db.User.findByPk(matchToEnd.playerOneId);
+			const playerTwo = await db.User.findByPk(matchToEnd.playerTwoId);
+			playerOne.elo = newPlayerOneElo;
+			playerTwo.elo = newPlayerTwoElo;
+			await playerOne.save();
+			await playerTwo.save();
 		}
 	}
 	return matchToEnd;
