@@ -159,3 +159,16 @@ module.exports.logIn = async (credentials: LoginInput) => {
 		KEY
 	);
 };
+
+module.exports.getUserDetails = async (id: string) => {
+	const user = await db.User.findOne({
+		where: {
+			id,
+		},
+		include: [
+			{ model: db.Role, as: "role" },
+			{ model: db.Division, as: "division" },
+		],
+	});
+	return user;
+};

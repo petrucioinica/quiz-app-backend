@@ -7,7 +7,9 @@ const {
 	registerUser,
 	confirmEmail,
 	logIn,
+	getUserDetails,
 } = require("../services/UsersService");
+const authorisationMiddleware = require("../middlewares/authroisation");
 
 // middleware
 router.use((req, res, next) => {
@@ -62,5 +64,20 @@ router.post(
 		}
 	}
 );
+
+router.get("/get-user-details", authorisationMiddleware(), async (req, res) => {
+	try {
+		//@ts-ignore
+		const user = req.user;
+		const userDetails = await getUserDetails(user.id);
+		res.status(200).json(userDetails);
+	} catch (err) {
+		console.error(err);
+		res.status((err as ErrorInterface).status ?? 400).json({
+			error: (err as ErrorInterface).error ?? "Error!",
+			message: (err as ErrorInterface).message ?? "Something went wrong!",
+		});
+	}
+});
 
 module.exports = router;
