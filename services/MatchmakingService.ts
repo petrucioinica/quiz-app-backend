@@ -5,17 +5,17 @@ import { FinishMatchInputsInterface } from "./MatchmakingService.type";
 const { Sequelize, Op } = require("sequelize");
 const db = require("../models");
 
-const playerQueue = new PlayerQueue();
+//const playerQueue = new PlayerQueue();
 const unrankedQueue = new PlayerQueue();
 
 module.exports.matchmakeUser = async (user: UserToQueueInterface) => {
-	const toMatchmake = playerQueue.matchmake(user);
+	//const toMatchmake = playerQueue.matchmake(user);
 	//create match and pick random questions for it
 	//send the match with the questions
 	//then we move to match controller where we handle the match
 	//users do not wait for each other, but at the end of the match the earliest ueer will long poll until the match is done
 	//when it is done, calculate elo and whatever and send the results to the frontend show they can show them
-	return toMatchmake;
+	//return toMatchmake;
 };
 
 module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
@@ -60,10 +60,9 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 		const timeDifference = new Date() - new Date(currentMatch.startedAt);
 
 		if (timeDifference - 10000 > availableTime) {
-			console.log("asfafsaf");
 			currentMatch.endedAt = new Date().toISOString();
 			await currentMatch.save();
-			return { status: "searching", timeDifference: "a lot" };
+			return { status: "searching" };
 		}
 		//@ts-ignore
 		returnMatch.questions = matchQuestions.map((q) => q.Question);
@@ -77,7 +76,6 @@ module.exports.matchmakeUnranked = async (user: UserToQueueInterface) => {
 	}
 
 	const toMatchmake = unrankedQueue.matchmake(user);
-	unrankedQueue.log();
 
 	if (toMatchmake.p1) {
 		//to create match first and pass its id

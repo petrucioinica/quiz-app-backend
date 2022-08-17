@@ -15,9 +15,7 @@ class PlayerQueue {
 		setInterval(() => {
 			const newQueue: EnqueuedUserInterface[] = [];
 			for (const enqPlayer of this.queue) {
-				if (
-					this.bufferQueue.filter((player) => player.id === enqPlayer.id).length
-				) {
+				if (this.bufferQueue.find((player) => player.id === enqPlayer.id)) {
 					newQueue.push({
 						...enqPlayer,
 						timeInQueue: enqPlayer.timeInQueue + 1,
@@ -26,11 +24,12 @@ class PlayerQueue {
 			}
 
 			const newPlayersFromBuffer = this.bufferQueue
-				.filter((player) => !newQueue.filter((p) => p.id === player.id).length)
+				.filter((player) => !this.queue.find((p) => p.id === player.id))
 				.map((player) => ({
 					...player,
 					timeInQueue: 1,
 				})); ///@ts-ignore
+
 			this.queue = [...newQueue, ...newPlayersFromBuffer].sort(
 				(p1, p2) => p1.elo - p2.elo
 			);
@@ -45,11 +44,14 @@ class PlayerQueue {
 	}
 
 	public matchmake(player: UserToQueueInterface) {
+		if (!this.bufferQueue.find((user) => user.id === player.id)) {
+			this.push(player);
+		}
+
 		const playerQueuePosition = this.queue.findIndex(
 			(user) => user.id === player.id
 		);
 		if (playerQueuePosition === -1) {
-			this.push(player);
 			return {
 				status: "searching",
 			};
@@ -103,10 +105,6 @@ class PlayerQueue {
 		return {
 			status: "searching",
 		};
-	}
-
-	public log() {
-		console.log(this.queue, "&&&&&&&&&&&&", this.bufferQueue);
 	}
 }
 
